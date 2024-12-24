@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Message for Uncle CJ</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 5% 10%;
+            line-height: 1.8;
+            color: #FF0000; /* Red text color */
+            font-size: 24px;
+            font-weight: bold;
+        }
+        p {
+            margin-bottom: 20px;
+        }
+        h1 {
+            font-size: 24px;
+        }
+        .word-search {
+            display: grid;
+            grid-template-columns: repeat(25, 20px);
+            grid-gap: 1px;
+            justify-content: center;
+            margin: 20px auto;
+        }
+        .cell {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #000; /* Black border */
+            background-color: #FFF; /* White background */
+            color: #000; /* Black text color */
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+    <h1>Nice find!</h1>
+
+    <p>I would bet this table is frequently used as a foot rest.  In the spirit of that, put up your feet and enjoy this word search!</p>
+
+    <p>This word search is unique, notice there are no words listed for you to find.  Think of this as an extra hard word search.  To make it a little bit easier, all words are either hidden horizontally from left to right or vertically from top down.  No backwards or diagonal words.</p>
+
+    <p>There are three categories of words: state names, rock bands, and freshwater fish.</p>
+
+    <p>For the state name category, the total number of state names multiplied by three, plus two, is the first number to one of the locks.</p>
+
+    <p>For the rock bands category, the total number of rock bands is the second number to the same lock.</p>
+
+    <p>For the freshwater fish category, the total number of freshwater fish multiplied by three is the third number to the same lock.</p>
+
+    <!-- Word search below -->
+    <div class="word-search" id="word-search">
+        <!-- The grid will be generated here -->
+    </div>
+
+    <script>
+        const gridSize = 25;
+        const words = [
+            // State names
+            "ALABAMA", "CALIFORNIA", "FLORIDA", "GEORGIA", "TEXAS", "OKLAHOMA", "OREGON", 
+            "MONTANA", "NEBRASKA", "MICHIGAN", "NEWYORK", "ILLINOIS",
+            
+            // Rock bands
+            "AEROSMITH", "QUEEN", "JOURNEY", "PINKFLOYD", "RUSH", "ROLLINGSTONES", "LEDZEPPELIN", "BEATLES",    
+        
+            // Freshwater fish
+            "BASS", "CATFISH", "WALLEYE", "PIKE", "PERCH", "CARP", "CRAPPIE", 
+            "BLUEGILL", "SUNFISH", "MUSKY"
+        ];
+
+        const grid = Array.from({ length: gridSize }, () =>
+            Array(gridSize).fill(null)
+        );
+
+        // Function to place a word horizontally or vertically
+        function placeWord(word) {
+            const directions = [
+                { dx: 1, dy: 0 }, // Horizontal (left to right)
+                { dx: 0, dy: 1 }  // Vertical (top to bottom)
+            ];
+            let placed = false;
+            while (!placed) {
+                const x = Math.floor(Math.random() * gridSize);
+                const y = Math.floor(Math.random() * gridSize);
+                const direction = directions[Math.floor(Math.random() * directions.length)];
+                if (canPlaceWord(word, x, y, direction)) {
+                    for (let i = 0; i < word.length; i++) {
+                        grid[y + i * direction.dy][x + i * direction.dx] = word[i];
+                    }
+                    placed = true;
+                }
+            }
+        }
+
+        // Check if a word can be placed at a given position
+        function canPlaceWord(word, x, y, direction) {
+            for (let i = 0; i < word.length; i++) {
+                const newX = x + i * direction.dx;
+                const newY = y + i * direction.dy;
+                if (
+                    newX < 0 || newX >= gridSize ||
+                    newY < 0 || newY >= gridSize ||
+                    (grid[newY][newX] !== null && grid[newY][newX] !== word[i])
+                ) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // Fill the grid with random letters
+        function fillGrid() {
+            const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            for (let y = 0; y < gridSize; y++) {
+                for (let x = 0; x < gridSize; x++) {
+                    if (grid[y][x] === null) {
+                        grid[y][x] = letters[Math.floor(Math.random() * letters.length)];
+                    }
+                }
+            }
+        }
+
+        // Render the grid in HTML
+        function renderGrid() {
+            const wordSearch = document.getElementById("word-search");
+            grid.forEach(row => {
+                row.forEach(cell => {
+                    const div = document.createElement("div");
+                    div.className = "cell";
+                    div.textContent = cell;
+                    wordSearch.appendChild(div);
+                });
+            });
+        }
+
+        // Place all words
+        words.forEach(word => placeWord(word));
+        fillGrid();
+        renderGrid();
+    </script>
+</body>
+</html>
